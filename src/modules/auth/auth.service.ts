@@ -6,8 +6,6 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { getAuth, createUserWithEmailAndPassword, Auth, signInWithEmailAndPassword } from "firebase/auth";
-import { error } from 'console';
-
 
 @Injectable()
 export class AuthService {

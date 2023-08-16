@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { initializeApp } from "firebase/app";
+import * as admin from 'firebase-admin'
 import { getAuth } from "firebase/auth";
 import * as dotenv from 'dotenv'
 
@@ -19,7 +20,7 @@ const firebaseConfig = {
 export class FirebaseService {
   connect() {
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    return app
+    admin.initializeApp(firebaseConfig);
+    getAuth(app);
   }
 }
