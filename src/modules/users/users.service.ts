@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/firebase/prisma.service';
-
+import * as bcrypt from 'bcrypt';
 // This should be a real class/interface representing a user entity
 export type User = any;
 
@@ -21,7 +21,7 @@ export class UsersService {
 
   async create(user) {
     return await this.prismaService.user.create({
-      data: user
-    })
+      data: user,
+    });
   }
 }
