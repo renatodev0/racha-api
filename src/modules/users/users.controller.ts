@@ -3,12 +3,15 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  Patch,
   Post,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/users.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { FirebaseAuthGuard } from '../auth/auth.guard';
 
 @Controller('users')
@@ -24,10 +27,21 @@ export class UsersController {
     return await this.usersService.findAll(page, limit);
   }
 
-
   @UseGuards(FirebaseAuthGuard)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
+  }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Patch(':id')
+  async update(@Body() data: UpdateUserDto, @Param('id') id: string) {
+    return await this.usersService.update(data, id);
+  }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Get('current-user')
+  async getCurrentUser(@Request() req) {
+    return await this.usersService.currentUser(req.email);
   }
 }

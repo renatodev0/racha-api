@@ -31,19 +31,19 @@ enum Day {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        String  @id @default(uuid())
   name      String  @db.VarChar(255)
   email     String  @unique @db.VarChar(255)
   username  String  @unique @db.VarChar(50)
   telephone String
-  addressId Int?
+  addressId String?
   avatar    String? @db.VarChar(255)
 
   Address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Address {
-  id           Int     @id @default(autoincrement())
+  id           String  @id @default(uuid())
   street       String  @db.VarChar(255)
   number       String  @db.VarChar(10)
   complement   String? @db.VarChar(100)
@@ -60,10 +60,10 @@ model Address {
 }
 
 model Spot {
-  id        Int    @id @default(autoincrement())
+  id        String  @id @default(uuid())
   name      String
   logo      String
-  addressId Int?
+  addressId String?
 
   Field        Field[]
   WorkingHours workingHour[]
@@ -71,10 +71,10 @@ model Spot {
 }
 
 model Field {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(uuid())
   name     String
   capacity Int
-  spotId   Int
+  spotId   String
   type     FieldType
   sport    Sport
 
@@ -86,7 +86,7 @@ model workingHour {
   day       Day
   openHour  String
   closeHour String
-  spotId    Int
+  spotId    String
 
   Spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 

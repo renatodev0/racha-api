@@ -8,8 +8,6 @@ import * as admin from 'firebase-admin';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
-  constructor() {
-  }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const idToken = request.headers.authorization?.split(' ')[1];
@@ -22,8 +20,10 @@ export class FirebaseAuthGuard implements CanActivate {
       .auth()
       .verifyIdToken(idToken)
       .catch((error) => {
-        throw new UnauthorizedException('Invalid token');
+        throw new UnauthorizedException('Invalid token', error);
       });
+
+    request.user = decodedToken.email;
 
     return decodedToken ? true : false;
   }
