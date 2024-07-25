@@ -44,4 +44,10 @@ export class UsersController {
   async getCurrentUser(@Request() req) {
     return await this.usersService.currentUser(req.email);
   }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return await this.usersService.findById(id);
+  }
 }
