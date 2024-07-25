@@ -18,6 +18,7 @@ enum FieldType {
 enum Sport {
   BASKETBALL
   FOOTBALL
+  BEACHTENNIS
 }
 
 enum Day {
@@ -40,6 +41,16 @@ model User {
   avatar    String? @db.VarChar(255)
 
   Address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Team    Teams[]
+}
+
+model Teams {
+  id        String  @id @default(uuid())
+  name      String
+  logo      String?
+  teamOwner String
+
+  Users User[]
 }
 
 model Address {
@@ -62,12 +73,13 @@ model Address {
 model Spot {
   id        String  @id @default(uuid())
   name      String
-  logo      String
+  logo      String?
   addressId String?
+
+  Address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   Field        Field[]
   WorkingHours workingHour[]
-  Address      Address?      @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Field {
