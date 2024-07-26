@@ -31,6 +31,17 @@ enum Day {
   SUNDAY
 }
 
+enum GameType {
+  FREE
+  VERSUS
+  X1
+}
+
+enum EntityType {
+  USER
+  TEAM
+}
+
 model User {
   id        String  @id @default(uuid())
   name      String  @db.VarChar(255)
@@ -40,8 +51,9 @@ model User {
   addressId String?
   avatar    String? @db.VarChar(255)
 
-  Address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Team    Teams[]
+  Address      Address?       @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Team         Teams[]
+  GamesOnUsers GamesOnUsers[]
 }
 
 model Teams {
@@ -50,7 +62,8 @@ model Teams {
   logo      String?
   teamOwner String
 
-  Users User[]
+  Users        User[]
+  GamesOnTeams GamesOnTeams[]
 }
 
 model Address {
@@ -80,6 +93,7 @@ model Spot {
 
   Field        Field[]
   WorkingHours workingHour[]
+  Games        Games[]
 }
 
 model Field {
@@ -90,7 +104,8 @@ model Field {
   type     FieldType
   sport    Sport
 
-  Spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Spot  Spot    @relation(fields: [spotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Games Games[]
 }
 
 model workingHour {
@@ -103,4 +118,59 @@ model workingHour {
   Spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([spotId, day])
+}
+
+model Games {
+  id        String   @id @default(uuid())
+  name      String
+  startTime DateTime
+  endTime   DateTime
+  type      GameType
+  spotId    String
+  fieldId   String
+  result    String? // To store the result of the game
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Spot        Spot           @relation(fields: [spotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Field       Field          @relation(fields: [fieldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Users       GamesOnUsers[]
+  Teams       GamesOnTeams[]
+  GameResults GameResults[]
+
+  @@unique([fieldId, startTime, endTime]) // Ensure no overlapping games on the same field
+}
+
+model GamesOnUsers {
+  id     String @id @default(uuid())
+  gameId String
+  userId String
+
+  Games Games @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  User  User  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([gameId, userId])
+}
+
+model GamesOnTeams {
+  id     String @id @default(uuid())
+  gameId String
+  teamId String
+
+  Games Games @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Teams Teams @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([gameId, teamId])
+}
+
+model GameResults {
+  id         String     @id @default(uuid())
+  gameId     String
+  entityId   String
+  entityType EntityType
+  score      Int
+
+  Games Games @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([gameId, entityId, entityType])
 }
